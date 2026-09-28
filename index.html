@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Odoo Invoicing – AI Email Drafts demo</title>
+<style>
+:root{--bg:#fff;--bg2:#f4f5f7;--fg:#212529;--mu:#6c757d;--ln:#d8dadd;--pr:#714b67;--prh:#5d3d55;--tl:#017e84;--tlb:#e6f3f4;--sh:0 8px 28px rgba(0,0,0,.18);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1e21;--bg2:#25282c;--fg:#e6e8ea;--mu:#9aa1a8;--ln:#3a3e44;--tlb:#123c3f;--pr:#a4709a;--prh:#b884ad;--tl:#4fc3c9}}
+:root[data-theme="dark"]{--bg:#1c1e21;--bg2:#25282c;--fg:#e6e8ea;--mu:#9aa1a8;--ln:#3a3e44;--tlb:#123c3f;--pr:#a4709a;--prh:#b884ad;--tl:#4fc3c9}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+.intro{max-width:1200px;margin:0 auto;padding:24px 18px 18px}
+.intro h2{font-size:50px;line-height:1.15;font-weight:600;color:#714b67;margin:0 0 14px}
+.intro p{font-size:17px;line-height:1.65;color:#3d4148;margin:0;max-width:900px}
+.demo{display:flex;flex-direction:column;height:640px;max-width:1200px;margin:0 auto 24px;border:1px solid var(--ln);border-radius:8px;overflow:hidden}
+.nav{display:flex;align-items:center;gap:20px;padding:0 18px;height:48px;flex:none;border-bottom:1px solid var(--ln)}
+.logo{display:flex;align-items:center;gap:9px;font-size:18px}
+.logo i{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#8a5a7c,#714b67);color:#fff;display:grid;place-items:center;font-style:normal;font-weight:700}
+.nav a{cursor:pointer}.nav a:hover{color:var(--pr)}
+.sp{flex:1}
+.av{width:30px;height:30px;border-radius:50%;background:#c9b6e4;color:#333;display:grid;place-items:center;font-weight:700;font-size:12px}
+.btn{border:1px solid var(--ln);background:var(--bg);border-radius:4px;padding:6px 13px}
+.btn:hover{background:var(--bg2)}
+.btn.p{background:var(--pr);border-color:var(--pr);color:#fff}.btn.p:hover{background:var(--prh)}
+.btn.s{padding:3px 10px;font-size:13px}
+.btn:disabled{opacity:.55;cursor:default}
+.cp{display:flex;align-items:center;gap:14px;padding:8px 18px;border-bottom:1px solid var(--ln);flex:none}
+.cp .l{color:var(--tl)}
+main{flex:1;min-height:0;overflow:auto;padding:14px}
+.ban{border-radius:6px;padding:9px 14px;margin-bottom:12px;background:rgba(240,180,0,.16)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{text-align:left;font-weight:600;color:var(--mu);padding:7px 8px;border-bottom:1px solid var(--ln);font-size:13px}
+td{padding:10px 8px;border-bottom:1px solid var(--ln)}
+tbody tr:hover{background:var(--bg2)}
+.pill{font-size:12px;font-weight:600;border-radius:10px;padding:1px 10px;white-space:nowrap}
+.h{background:rgba(40,167,69,.18);color:#1e8a3c}.m{background:rgba(240,180,0,.22);color:#a87800}.r{background:rgba(212,76,89,.18);color:#d44c59}
+.sent{display:block;font-size:12px;color:var(--tl);margin-top:2px}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;place-items:center;z-index:20;padding:12px}
+.dlg.show{display:grid}
+.dl{background:var(--bg);width:640px;max-width:100%;max-height:100%;overflow:auto;border-radius:8px;box-shadow:var(--sh);padding:16px}
+.dh{display:flex;align-items:center;font-size:17px;margin-bottom:8px}
+.x{background:none;border:0;font-size:18px;color:var(--mu)}
+.fr{display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--ln);padding:5px 0}
+.fr b{width:64px;flex:none}.fr input{flex:1;border:0;background:none;outline:none}
+.aibar{display:flex;gap:8px;align-items:center;margin:12px 0 8px;flex-wrap:wrap}
+.aibar input{flex:1;min-width:180px;border:1px solid var(--ln);border-radius:16px;padding:6px 12px;background:var(--bg);outline:none}
+.aibar input:focus{border-color:var(--pr)}
+.aibar select{border:1px solid var(--ln);border-radius:4px;padding:5px;background:var(--bg)}
+.aib{font-weight:800;font-size:17px;background:linear-gradient(90deg,#e0407a,#f5a623,#3b8bd9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chips button{border:1px solid var(--ln);background:var(--bg);border-radius:14px;padding:2px 11px;font-size:13px}.chips button:hover{border-color:var(--pr);color:var(--pr)}
+textarea{width:100%;box-sizing:border-box;border:1px solid var(--ln);border-radius:6px;padding:10px 12px;background:var(--bg);resize:vertical;line-height:1.55;outline:none}
+.df{display:flex;gap:8px;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2e33;color:#fff;padding:9px 18px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.toast.show{opacity:1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .intro h2{color:#a4709a}:root:not([data-theme="light"]) .intro p{color:#c5c9ce}}
+:root[data-theme="dark"] .intro h2{color:#a4709a}:root[data-theme="dark"] .intro p{color:#c5c9ce}
+@media (max-width:860px){.nav a{display:none}}
+@media (max-width:600px){.intro h2{font-size:34px}}
+</style></head>
+<body>
+<div class="intro"><h2>Experience the Odoo Invoicing app</h2>
+<p>Try it yourself in three simple steps. First, click <b>Send</b> on any invoice in the list to open the email window. Next, pick one of the suggestions such as "Polite payment reminder", or type your own request in the AI bar, and click <b>Write with AI</b>. Odoo writes the email for you, using the customer's name, the invoice number, the amount and the due date. Finally, read it, change anything you like, choose a friendlier or firmer tone if you wish, and click <b>Send</b>. This is a demonstration with sample data, so no real email is sent and nothing is saved.</p></div>
+<div class="demo"><div class="nav"><div class="logo"><i>▤</i>Invoicing</div>
+<a data-t>Customers</a><a data-t>Vendors</a><a data-t>Reporting</a><a data-t>Configuration</a><span class="sp"></span><div class="av">MA</div></div>
+<div class="cp"><span><span class="l">Customers</span> / <b>Invoices</b></span></div>
+<main id="app"></main></div>
+<div class="dlg" id="dlg"></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),fm=n=>"AED "+n.toLocaleString("en-US");
+const dt=d=>{const x=new Date();x.setDate(x.getDate()-d);return x.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})};
+const I=[[1,"INV/2026/00112","Azure Interior","Brandon Freeman",4200,15,"office chairs"],[2,"INV/2026/00118","Gemini Furniture","Edith Sanchez",12850,32,"20 desks"],[3,"INV/2026/00121","Deco Addict","Douglas Fletcher",1980,6,"shelving units"],[4,"INV/2026/00125","Ready Mat","Nicole Ford",7300,-5,"floor mats"],[5,"INV/2026/00127","Lumber Inc","Lorraine Douglas",3150,0,"oak panels",1]].map(a=>({id:a[0],num:a[1],co:a[2],who:a[3],amt:a[4],d:a[5],item:a[6],paid:!!a[7],sent:false}));
+let D=null,busy=false;
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove("show"),1900)}
+const sp=i=>i.paid?["h","Paid"]:i.d>0?["r","Overdue "+i.d+" days"]:["m","Due in "+(-i.d)+" days"];
+function draw(){const o=I.filter(i=>!i.paid&&i.d>0);
+$("#app").innerHTML=`<div class="ban">${o.length} overdue invoices · ${fm(o.reduce((a,i)=>a+i.amt,0))} unpaid</div><div class="tw"><table><thead><tr><th>Number</th><th>Customer</th><th>Amount</th><th>Due date</th><th>Status</th><th></th></tr></thead><tbody>${I.map(i=>{const s=sp(i);return `<tr><td><b>${i.num}</b></td><td>${i.co}</td><td>${fm(i.amt)}</td><td>${i.paid?"—":dt(i.d)}</td><td><span class="pill ${s[0]}">${s[1]}</span>${i.sent?`<span class="sent">✉ Email sent</span>`:""}</td><td><button class="btn s" data-o="${i.id}">Send</button></td></tr>`}).join("")}</tbody></table></div>`}
+function gen(i,q,tone){const f=i.who.split(" ")[0],s=q.toLowerCase();let k=/thank/.test(s)?"t":/follow/.test(s)?"f":"r";if(i.paid&&k=="r")k="t";
+const hi=tone=="Friendly"?"Hi "+f+",":"Dear "+f+",";
+const sg={Friendly:"Thanks so much,\nMitchell",Polite:"Kind regards,\nMitchell Admin\nDemo Company",Firm:"Regards,\nMitchell Admin\nDemo Company"}[tone];
+const w=i.paid?"was paid":i.d>0?"was due on "+dt(i.d)+" and is now "+i.d+" days overdue":"is due on "+dt(i.d),a=fm(i.amt);
+if(k=="t")return{s:"Thank you for your order",b:`${hi}\n\nThank you for your recent order of ${i.item}. We truly appreciate your business${i.paid?" and your prompt payment of invoice "+i.num:""}.\n\nIf there is anything else we can help with, please just let us know.\n\n${sg}`};
+if(k=="f")return{s:"Following up on invoice "+i.num,b:`${hi}\n\nI'm following up on invoice ${i.num} for ${a} (${i.item}), which ${w}.\n\nPlease let me know if you have any questions or need a copy of the invoice.\n\n${sg}`};
+const b={Friendly:`${hi}\n\nA quick nudge about invoice ${i.num} (${a} for ${i.item}). It ${w}. If payment is already on its way, thank you! If not, could you let us know when we can expect it?\n\n${sg}`,
+Polite:`${hi}\n\nI hope you are doing well. This is a gentle reminder that invoice ${i.num} for ${a}, covering ${i.item}, ${w}.\n\nIf payment has already been made, please disregard this message. Otherwise, we would appreciate payment at your earliest convenience.\n\nThank you for your business.\n\n${sg}`,
+Firm:`${hi}\n\nOur records show that invoice ${i.num} for ${a} ${w}.\n\nPlease arrange payment within 7 days. If there is an issue with the invoice, contact us immediately so we can resolve it.\n\n${sg}`}[tone];
+return{s:"Reminder: invoice "+i.num+(i.d>0?" is overdue":" is due soon"),b}}
+function openD(id){const i=I.find(x=>x.id==id);D=i;
+const em=i.who.toLowerCase().replace(" ",".")+"@"+i.co.toLowerCase().replace(/\s/g,"")+".com";
+$("#dlg").innerHTML=`<div class="dl"><div class="dh"><b>Send</b><span class="sp"></span><button class="x" data-c>✕</button></div>
+<div class="fr"><b>To</b><span>${i.who} &lt;${em}&gt;</span></div><div class="fr"><b>Subject</b><input id="sub" value="Invoice (${i.num})"></div>
+<div class="aibar"><span class="aib">AI</span><input id="aip" placeholder='Ask AI, e.g. "write a polite follow-up for an overdue invoice"'><select id="tone"><option>Polite</option><option>Friendly</option><option>Firm</option></select><button class="btn p s" id="go" data-g>Write with AI</button></div>
+<div class="chips"><button data-q="Polite payment reminder">Polite payment reminder</button><button data-q="Follow-up on this invoice">Follow-up on this invoice</button><button data-q="Thank-you note">Thank-you note</button></div>
+<textarea id="body" rows="11">Hello ${i.who},\n\nHere is your invoice ${i.num} amounting to ${fm(i.amt)}.\nPlease remit payment at your earliest convenience.\n\nDo not hesitate to contact us if you have any questions.</textarea>
+<div class="df"><button class="btn p" data-send>Send</button><button class="btn" data-c>Discard</button><span class="sp"></span><button class="btn s" data-sh>Shorten</button></div></div>`;
+$("#dlg").classList.add("show");$("#aip").focus()}
+function write(q){if(busy)return;const i=D;q=(q||$("#aip").value).trim()||"polite payment reminder";$("#aip").value=q;busy=true;const g=$("#go");g.disabled=true;g.textContent="Writing…";
+setTimeout(()=>{const r=gen(i,q,$("#tone").value),t=$("#body");$("#sub").value=r.s;t.value="";let n=0;const h=setInterval(()=>{t.value=r.b.slice(0,n+=5);t.scrollTop=1e5;if(n>=r.b.length){clearInterval(h);busy=false;g.disabled=false;g.textContent="Write with AI";toast("Draft ready. Review it before sending.")}},12)},700)}
+function close(){$("#dlg").classList.remove("show");busy=false}
+document.addEventListener("click",e=>{const t=e.target;
+if(t.closest("[data-t]"))return toast("Not available in this demo");
+const o=t.closest("[data-o]"),q=t.closest("[data-q]");
+if(o)openD(o.dataset.o);else if(q)write(q.dataset.q);else if(t.closest("[data-g]"))write();
+else if(t.closest("[data-c]"))close();
+else if(t.closest("[data-sh]")){const b=$("#body"),p=b.value.split("\n\n");if(p.length>3)b.value=[p[0],p[1],p[p.length-1]].join("\n\n");toast("Shortened")}
+else if(t.closest("[data-send]")){if(busy)return;D.sent=true;toast("Email sent to "+D.who+" (demo)");close();draw()}});
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="aip")write()});
+draw();
+</script></body></html>
